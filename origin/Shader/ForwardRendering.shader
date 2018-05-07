@@ -1,4 +1,6 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+﻿// Upgrade NOTE: replaced '_LightMatrix0' with 'unity_WorldToLight'
+
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 // Upgrade NOTE: replaced '_LightMatrix0' with 'unity_WorldToLight'
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
@@ -45,7 +47,7 @@ Shader "OwnShader/ForwardRendering" {
 			v2f vert(a2v v){
 				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
-				o.worldnormal = mul(unity_ObjectToWorld,v.normal);
+				o.worldnormal = UnityObjectToWorldNormal(v.normal);
 				o.worldpos = mul(unity_ObjectToWorld,v.vertex).xyz;
 
 				TRANSFER_SHADOW(o);
@@ -110,7 +112,7 @@ Shader "OwnShader/ForwardRendering" {
 			v2f vert(a2v v){
 				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
-				o.worldnormal = mul(unity_ObjectToWorld,v.normal);
+				o.worldnormal = UnityObjectToWorldNormal(v.normal);
 				o.worldpos = mul(unity_ObjectToWorld,v.vertex).xyz;
 
 				return o;
@@ -134,10 +136,15 @@ Shader "OwnShader/ForwardRendering" {
 				#ifdef USING_DIRECTIONAL_LIGHT
 					fixed atten = 1.0;   
 				#else
-					float3 LightCoord = mul(unity_WorldToLight, float4(i.worldpos,1)).xyz;
-					float atten = tex2D(_LightTexture0, dot(LightCoord,LightCoord).rr).UNITY_ATTEN_CHANNEL;
-					//float distence = length(_WorldSpaceLightPos0.xyz - i.worldpos);
-					//float atten = 1/distence;
+					#if defined (POINT)
+        				float3 lightCoord = mul(unity_WorldToLight, float4(i.worldpos, 1)).xyz;
+        				fixed atten = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
+        			#elif defined (SPOT)
+        				float4 lightCoord = mul(unity_WorldToLight, float4(i.worldpos, 1));
+        				fixed atten = (lightCoord.z > 0) * tex2D(_LightTexture0, lightCoord.xy / lightCoord.w + 0.5).w * tex2D(_LightTextureB0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
+					#else
+					fixed atten = 1.0;
+					#endif
 				#endif
 
 				return float4((diffuse + specular) * atten , 1.0);

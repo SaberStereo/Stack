@@ -163,10 +163,10 @@ public class cubemeshGenerator : MonoBehaviour {
 	}
 
 	void caculateUV(Square square){
-		uv.Add (new Vector3 (square.topLeft.position.x, square.topLeft.position.z));
-		uv.Add (new Vector3 (square.topRight.position.x, square.topRight.position.z));
-		uv.Add (new Vector3 (square.bottomLeft.position.x, square.bottomLeft.position.z));
-		uv.Add (new Vector3 (square.bottomRight.position.x, square.bottomRight.position.z));
+		uv.Add (new Vector2 (square.topLeft.position.x, square.topLeft.position.z));
+		uv.Add (new Vector2 (square.topRight.position.x, square.topRight.position.z));
+		uv.Add (new Vector2 (square.bottomLeft.position.x, square.bottomLeft.position.z));
+		uv.Add (new Vector2 (square.bottomRight.position.x, square.bottomRight.position.z));
 	}
 
 	struct Triangle{

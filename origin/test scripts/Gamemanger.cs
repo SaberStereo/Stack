@@ -1,8 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Gamemanger : MonoBehaviour {
+
+	public Text Score;
 
 	public GameObject cubeGenerator;
 	public GameObject Effect;
@@ -37,6 +41,7 @@ public class Gamemanger : MonoBehaviour {
 	List<Vector2> PreNodes;
 
 	void Start () {//初始化时生成方块并调用其GenerateCube函数
+		Score.fontSize = 30;
 
 		PreNodes = new List<Vector2> ();
 
@@ -102,10 +107,14 @@ public class Gamemanger : MonoBehaviour {
 					cubeCount [1] = 0;
 				}
 			}
+			Score.text = cubeCount [0].ToString();
 		} else {
 			Destroy (cube);
-//			Debug.Break ();
-			Debug.Log(cubeCount[0]);
+			Score.text = "Last Score is " + cubeCount[0].ToString() + "! Press R to restart.";
+			Score.fontSize = 15;
+			if (Input.GetKeyDown(KeyCode.R)) {
+				SceneManager.LoadScene ("main", LoadSceneMode.Single);
+			}
 		}
 	}
 
